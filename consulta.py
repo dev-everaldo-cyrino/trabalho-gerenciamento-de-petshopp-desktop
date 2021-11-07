@@ -1,4 +1,3 @@
-import builtins
 from tkinter import *
 
 root = Tk()
