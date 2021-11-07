@@ -1,3 +1,4 @@
+import builtins
 from tkinter import *
 
 root = Tk()
@@ -6,7 +7,7 @@ root.title('consulta')
 
 hora = StringVar()
 
-Label(root,text='tela de consulta',fg='royal blue',font='arial 40 bold').place(x=135,y=0)
+Label(root,text='tela de consulta',fg='royal blue',font='Arial 40 bold').place(x=135,y=0)
 
 
 Label(root,text='nome : ',fg='steelblue',font='arial 18 bold').place(x=15,y=50)
@@ -41,5 +42,17 @@ btn_cadastrar= Button(root,text='cadastrar',bg='dodger blue',font='arial 20 bold
 btn_cadastrar.place(x=10,y=365)
 btn_cadastrar= Button(root,text='atualizar',bg='royal blue',font='arial 20 bold',width='8')
 btn_cadastrar.place(x=10,y=429)
+
+
+frame1 = Frame(root,borderwidth=2,relief='sunken',bg='snow')
+frame1.place(x=300,y=55,width=380,height=300)
+
+
+btn_selecionar = Button(root,text='selecionar',font=('Arial', 17),bg='LightSteelBlue2')
+btn_selecionar.place(x=350,y=420,width=300)
+btn_pesquisar= Button(root,text='buscar',font=('Arial', 17),bg='SkyBlue1')
+btn_pesquisar.place(x=585,y=358)
+buscare = Entry(root,font=('Arial',18),bd=3)
+buscare.place(x=300,y=365,width=280,height=30)
 
 root.mainloop()
