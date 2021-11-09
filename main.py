@@ -1,10 +1,11 @@
 from tkinter import *
 import os
 
+ 
 pasta = os.path.dirname(__file__)
 
 def consulta():
-    exec(open(pasta+"\\consulta.py").read())
+    exec(open(pasta+"\\consulta.py").read(), {'c':pasta})
     
 def stoke():
     exec(open(pasta+"\\stoke.py").read())
