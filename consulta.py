@@ -80,14 +80,16 @@ def selecionar():
     idd = str(tabela.item(nomex,"values"))
     
     a = [idd]
+    
     if a[0][4] == ',':
         a = a[0][2]
     elif a[0][5] == ',':
-        a = a[0][3]
+        a = a[0][2] + a[0][3]
     elif a[0][6] == ',':
-        a = a[0][4]
+        a = a[0][2] + a[0][3] + a[0][4]
     elif a[0][7] == ',':
-        a = a[0][5]
+        a = a[0][2] + a[0][3] + a[0][4] + a[0][5]
+    
     limpar()
     cursor.execute('SELECT * FROM agenda2 WHERE id = {}'.format(a))
     valor = cursor.fetchall()

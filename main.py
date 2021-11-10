@@ -1,17 +1,17 @@
 from tkinter import *
 import os
 
- #testando isso
+
 pasta = os.path.dirname(__file__)
 
 def consulta():
     exec(open(pasta+"\\consulta.py").read(), {'c':pasta})
     
 def stoke():
-    exec(open(pasta+"\\stoke.py").read())
+    exec(open(pasta+"\\stoke.py").read(), {'c':pasta})
     
 def venda():
-    exec(open(pasta+"\\vender.py").read())
+    exec(open(pasta+"\\vender.py").read(), {'c':pasta})
 
 root = Tk()
 root.geometry('700x500+0+0')
