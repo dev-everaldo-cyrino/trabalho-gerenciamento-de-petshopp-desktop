@@ -1,7 +1,7 @@
 from tkinter import *
 import os
 
- 
+ #testando isso
 pasta = os.path.dirname(__file__)
 
 def consulta():
