@@ -2,9 +2,13 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import sqlite3
+#from reportlab.pdfgen import canvas
+#from reportlab.lib.pagesizes import A7
+import os
 
-
-
+f =open('total.txt','w')
+f.write('0')
+f.close()
 
 banco = sqlite3.connect('petshopp.db')
 cursor = banco.cursor()
@@ -16,6 +20,7 @@ banco.commit()
 root = Tk()
 root.geometry('700x500+0+0')
 root.title('tela de vendas')
+
 
 
 
@@ -96,6 +101,7 @@ def limpar():
     stokee.delete(0,END)
     precoe.delete(0,END)
     chave.delete(0,END)
+    quante.delete(0,END)
 
 def selecionar():
     #sql = "SELECT * FROM agenda1 WHERE nome=?"
@@ -122,17 +128,58 @@ def selecionar():
 
     
 def add (id,nome,quant,valor):
-    subtotal = quant * valor
+    total = 0
+    subtotal = float(quant) * float(valor)
+    a = open('total.txt','r')
+    a = a.read()
+    print('valor: ',a)
+    total = float(a) + subtotal
+    print('valor: ',a)
+    aa = open('total.txt','w')
+    aa = aa.write('{}'.format(total))
+    
     
     
     tabela1.insert("","end",values=(id,nome,quant,valor,subtotal))
-    #Label(root,text='${}'.format(total),fg='royal blue',font='Arial 18 bold').place(x=80,y=225)
+    Label(root,text='${}'.format(total),fg='royal blue',font='Arial 18 bold').place(x=80,y=225)
     limpar()
     
     
     
-def pagar():
-    pass
+def pagar(pago):
+    troco = 0
+    a = open('total.txt','r')
+    a = a.read()
+    a = float(a)
+    print(a)
+    pago = float(pago)
+    print(pago)
+    if a <= pago :
+        troco = pago - a
+        print(troco)
+        Label(root,text='${}'.format(troco),fg='royal blue',font='Arial 18 bold').place(x=80,y=465)
+    else:
+        messagebox.showerror(title='mensagem de erro',message='valor abaixo do total !!!')
+        
+    
+def finalizar(pago):
+    troco = 0
+    a = open('total.txt','r')
+    a = a.read()
+    total = float(a)
+    pago = float(pago)
+    troco = pago - total
+    
+    nota = open('tottal.txt','w')
+    arq = ['        petshopp nova era', 'Rua Natanael Barbosa Alvez - CENTRO','AREIAL - PB - FONE (83) 98888-8888','------------------------------------','produtos  :','------------------------------------','total    :                     {} '.format(total),'dinheiro :                     {}'.format(pago),'------------------------------------','troco    :                     {}'.format(troco),'-------------------------------------','     obrigado','   V O L T E     S E M P R E']
+    with open('total.txt','w')as arquivo:
+          for x in arq:
+            arquivo.write(str(x)+'\n')
+  
+    
+    
+    
+    
 
 Label(root,text='tela de vendas',fg='royal blue',font='Arial 40 bold').place(x=135,y=0)
 chave = Entry(root,width='0',font=('Arial',15))
@@ -159,10 +206,10 @@ Label(root,text='pagar :',fg='royal blue',font='Arial 18 bold').place(x=5,y=425)
 pagare = Entry(root,bd=3,font='Arial 18')
 pagare.place(x=90,y=430,width=73)
 Label(root,text='troco :',fg='royal blue',font='Arial 18 bold').place(x=5,y=465)
-Label(root,text='$',fg='royal blue',font='Arial 18 bold').place(x=80,y=465)
-btn_pagar= Button(root,text='pagar',bg='dodger blue',font='arial 16 bold',width='5',height='2',command=add)
+
+btn_pagar= Button(root,text='pagar',bg='dodger blue',font='arial 16 bold',width='5',height='2',command=lambda:pagar(pagare.get()))
 btn_pagar.place(x=180,y=419)
-btn_finalizar= Button(root,text='finalizar',bg='coral',font='arial 16 bold',width='7',height='2')
+btn_finalizar= Button(root,text='finalizar',bg='coral',font='arial 16 bold',width='7',height='2',command=lambda:finalizar(pagare.get()))
 btn_finalizar.place(x=260,y=419)
 
 
