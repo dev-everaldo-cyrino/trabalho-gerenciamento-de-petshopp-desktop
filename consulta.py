@@ -14,8 +14,6 @@ root = Tk()
 root.geometry('700x500+0+0')
 root.title('consulta')
 
-
-
 frame1 = Frame(root,borderwidth=2,relief='sunken',bg='snow')
 frame1.place(x=300,y=75,width=380,height=280)
 tabela = ttk.Treeview( frame1,

@@ -6,8 +6,16 @@ import sqlite3
 #from reportlab.lib.pagesizes import A7
 import os
 
-f =open('total.txt','w')
-f.write('0')
+banco = sqlite3.connect('petshopp.db')
+cursor = banco.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS agenda3 (id integer primary key autoincrement , nome text, stoke integer, valor integer , fone text)")
+banco.commit()
+
+f = open('total.txt','w')
+arq = ['        petshopp nova era', 'Rua Natanael Barbosa Alvez - CENTRO','AREIAL - PB - FONE (83) 98888-8888','------------------------------------']
+with open('total.txt','w')as arquivo:
+    for x in arq:
+        arquivo.write(str(x)+'\n')
 f.close()
 
 banco = sqlite3.connect('petshopp.db')
@@ -15,18 +23,9 @@ cursor = banco.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS agenda3 (id integer primary key autoincrement , nome text, stoke integer, valor integer , fone text)")
 banco.commit()
 
-
-
 root = Tk()
 root.geometry('700x500+0+0')
 root.title('tela de vendas')
-
-
-
-
-
-
-
 
 
 frame1 = Frame(root,borderwidth=2,relief='sunken',bg='snow')
@@ -42,6 +41,7 @@ tabela.heading(3, text='stoke')
 tabela.column(1, width= 50)
 tabela.column(2, width = 180 )
 tabela.column(3, width = 135 )
+
 barrarolagem = ttk.Scrollbar( frame1,orient='vertical',
 command=tabela.yview)
 barrarolagem.pack( side = 'right', fill='y')
@@ -62,7 +62,6 @@ tabela1.heading(2, text='produto')
 tabela1.heading(3, text='quant')
 tabela1.heading(4, text='preço')
 tabela1.heading(5, text='total')
-
 tabela1.column(1, width = 40)
 tabela1.column(2, width = 110)
 tabela1.column(3, width = 40)
@@ -108,7 +107,6 @@ def selecionar():
     nomex = tabela.selection()[0]  
     idd = str(tabela.item(nomex,"values"))
     a = [idd]
-    print(a)
     if a[0][4] == ',':
         a = a[0][2]
     elif a[0][5] == ',':
@@ -118,7 +116,6 @@ def selecionar():
     elif a[0][7] == ',':
         a = a[0][2] + a[0][3] + a[0][4] + a[0][5]
     limpar()
-    print(a)
     cursor.execute('SELECT * FROM agenda3 WHERE id = {}'.format(a))
     valor = cursor.fetchall()
     produtoe.insert(0,str(valor[0][1]))
@@ -127,63 +124,71 @@ def selecionar():
     chave.insert(0,str(valor[0][0]))
 
     
-def add (id,nome,quant,valor):
-    total = 0
+def add (id,nome,quant,valor,stoke):
     subtotal = float(quant) * float(valor)
-    a = open('total.txt','r')
-    a = a.read()
-    print('valor: ',a)
-    total = float(a) + subtotal
-    print('valor: ',a)
-    aa = open('total.txt','w')
-    aa = aa.write('{}'.format(total))
-    
-    
-    
+    total = totale.get()
+    if total == '':
+        totale.insert(0,str('0'))
+        total = totale.get()
+    total = float(total)
+    total += subtotal
+    totale.delete(0,END)
+    totale.insert(0,str(total))
     tabela1.insert("","end",values=(id,nome,quant,valor,subtotal))
     Label(root,text='${}'.format(total),fg='royal blue',font='Arial 18 bold').place(x=80,y=225)
     limpar()
+    f=open('total.txt', 'a')
+    f.write('   {}: \n'.format(nome))
+    f.write('     {}     {} =     {:.2f}\n'.format(quant,valor,subtotal))
+    f.close()
+    
+    novostoke = float(stoke) - float(quant)
+    cursor.execute("UPDATE agenda3 SET stoke = {}  WHERE id = {}".format(novostoke,id))
+    banco.commit()
+    buscar()
+     
     
     
     
 def pagar(pago):
     troco = 0
-    a = open('total.txt','r')
-    a = a.read()
+    a = totale.get()
     a = float(a)
-    print(a)
     pago = float(pago)
-    print(pago)
     if a <= pago :
         troco = pago - a
-        print(troco)
+        
         Label(root,text='${}'.format(troco),fg='royal blue',font='Arial 18 bold').place(x=80,y=465)
     else:
         messagebox.showerror(title='mensagem de erro',message='valor abaixo do total !!!')
         
     
-def finalizar(pago):
+def finalizar(pago,total):
     troco = 0
-    a = open('total.txt','r')
-    a = a.read()
-    total = float(a)
+    total = float(total)
     pago = float(pago)
     troco = pago - total
-    
-    nota = open('tottal.txt','w')
-    arq = ['        petshopp nova era', 'Rua Natanael Barbosa Alvez - CENTRO','AREIAL - PB - FONE (83) 98888-8888','------------------------------------','produtos  :','------------------------------------','total    :                     {} '.format(total),'dinheiro :                     {}'.format(pago),'------------------------------------','troco    :                     {}'.format(troco),'-------------------------------------','     obrigado','   V O L T E     S E M P R E']
-    with open('total.txt','w')as arquivo:
+    f = open('total.txt','a')
+    arq=['------------------------------------','total    :                     {} '.format(total),'dinheiro :                     {}'.format(pago),'------------------------------------','troco    :                     {}'.format(troco),'-------------------------------------','            obrigado','     V O L T E     S E M P R E']
+    with open('total.txt','a')as arquivo:
           for x in arq:
             arquivo.write(str(x)+'\n')
-  
+    arq1 = ['','','','        petshopp nova era', 'Rua Natanael Barbosa Alvez - CENTRO','AREIAL - PB - FONE (83) 98888-8888','------------------------------------']
+    with open('total.txt','a')as arquivo:
+        for x in arq1:
+            arquivo.write(str(x)+'\n')
+    f.close()
     
-    
-    
-    
+    Label(root,text='$0.00',fg='royal blue',font='Arial 18 bold').place(x=80,y=465)
+    Label(root,text='$0.00',fg='royal blue',font='Arial 18 bold').place(x=80,y=225)
+    totale.insert(0,str('0'))
+      
 
 Label(root,text='tela de vendas',fg='royal blue',font='Arial 40 bold').place(x=135,y=0)
 chave = Entry(root,width='0',font=('Arial',15))
 chave.place(x=2000,y=0)
+totale = Entry(root,width='0',font=('Arial',15))
+totale.place(x=1900,y=0)
 Label(root,text='produto:',fg='royal blue',font='Arial 15 bold').place(x=5,y=285)
 produtoe = Entry(root,bd=3,font='Arial 15')
 produtoe.place(x=110,y=287,width=160)
@@ -197,7 +202,7 @@ Label(root,text='quantidade:',fg='royal blue',font='Arial 18 bold').place(x=5,y=
 quante = Entry(root,bd=3,font='Arial 15')
 quante.place(x=148,y=377,width=60)
 
-btn_adicionar = Button(root,bg='royal blue',font='Arial 18 bold',text='ADD',command=lambda:add(chave.get(),produtoe.get(),quante.get(),precoe.get()))
+btn_adicionar = Button(root,bg='royal blue',font='Arial 18 bold',text='ADD',command=lambda:add(chave.get(),produtoe.get(),quante.get(),precoe.get(),stokee.get()))
 btn_adicionar.place(x=220,y=345,width=70,height=60)
 
 Label(root,text='total :',fg='royal blue',font='Arial 18 bold').place(x=5,y=225)
@@ -209,16 +214,8 @@ Label(root,text='troco :',fg='royal blue',font='Arial 18 bold').place(x=5,y=465)
 
 btn_pagar= Button(root,text='pagar',bg='dodger blue',font='arial 16 bold',width='5',height='2',command=lambda:pagar(pagare.get()))
 btn_pagar.place(x=180,y=419)
-btn_finalizar= Button(root,text='finalizar',bg='coral',font='arial 16 bold',width='7',height='2',command=lambda:finalizar(pagare.get()))
+btn_finalizar= Button(root,text='finalizar',bg='coral',font='arial 16 bold',width='7',height='2',command=lambda:finalizar(pagare.get(),totale.get()))
 btn_finalizar.place(x=260,y=419)
-
-
-
-
-    
-
-
-
 btn_selecionar = Button(root,text='selecionar',font=('Arial', 17),bg='LightSteelBlue2',command=selecionar)
 btn_selecionar.place(x=375,y=420,width=300)
 btn_pesquisar= Button(root,text='buscar',font=('Arial', 17),bg='SkyBlue1',command=buscar)
